@@ -1,5 +1,6 @@
+import { useNavigation } from "expo-router";
 import React, { useEffect, useState } from "react";
-import { View, Text, StyleSheet, ScrollView } from "react-native";
+import { View, Text, StyleSheet, ScrollView, TouchableOpacity } from "react-native";
 
 interface Annonce {
     _id: string;
@@ -14,6 +15,7 @@ interface Annonce {
 const Annonces = () => {
     const [annonces, setAnnonces] = useState<Annonce[]>([]);
     const [error, setError] = useState<string | null>(null);
+    const navigation = useNavigation();
 
     useEffect(() => {
         fetch("http://192.168.1.117:3000/")
@@ -26,6 +28,10 @@ const Annonces = () => {
             .then((data) => setAnnonces(data))
             .catch((error) => setError(error.message));
     }, []);
+
+    const handleAnnonceLink = (id: string) => {
+        navigation.navigate("Annonce", { id });
+    }
 
     return (
         <ScrollView contentContainerStyle={styles.container}>
@@ -42,6 +48,9 @@ const Annonces = () => {
                         <Text style={styles.categorie}>{annonce.categorie}</Text>
                         <Text style={styles.location}>{annonce.location}</Text>
                         <Text style={styles.vendeur}>{annonce.vendeur}</Text>
+                        <TouchableOpacity onPress={() => handleAnnonceLink(annonce._id)} style={styles.voir}> 
+                            <Text>Voir</Text>
+                        </TouchableOpacity>
                     </View>
                 ))
             )}
@@ -118,6 +127,9 @@ const styles = StyleSheet.create({
         fontSize: 14,
         color: '#666',
     },
+    voir: {
+        
+    }
 });
 
 export default Annonces;

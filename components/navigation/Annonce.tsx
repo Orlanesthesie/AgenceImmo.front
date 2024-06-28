@@ -1,3 +1,4 @@
+import { useNavigation } from "@react-navigation/native";
 import React, { useEffect, useState } from "react";
 import { View, Text, StyleSheet, ScrollView } from "react-native";
 
@@ -14,9 +15,10 @@ interface Annonce {
 const Annonces = () => {
     const [annonces, setAnnonces] = useState<Annonce[]>([]);
     const [error, setError] = useState<string | null>(null);
+    const navigation = useNavigation();
 
     useEffect(() => {
-        fetch("http://192.168.1.117:3000/create")
+        fetch("http://192.168.1.117:3000/annonce/:id")
             .then((response) => {
                 if (!response.ok) {
                     throw new Error('Network response was not ok');
@@ -42,6 +44,7 @@ const Annonces = () => {
                         <Text style={styles.categorie}>{annonce.categorie}</Text>
                         <Text style={styles.location}>{annonce.location}</Text>
                         <Text style={styles.vendeur}>{annonce.vendeur}</Text>
+                        
                     </View>
                 ))
             )}
