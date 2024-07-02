@@ -1,4 +1,4 @@
-import { useNavigation } from "expo-router";
+import { Link, useNavigation } from "expo-router";
 import React, { useEffect, useState } from "react";
 import { View, Text, StyleSheet, ScrollView, TouchableOpacity } from "react-native";
 
@@ -7,7 +7,7 @@ interface Annonce {
     titre: string;
     description: string;
     prix: string;
-    location: string;
+    localisation: string;
     categorie: string;
     vendeur: string;
 }
@@ -29,11 +29,24 @@ const Annonces = () => {
             .catch((error) => setError(error.message));
     }, []);
 
-    const handleAnnonceLink = (id: string) => {
-        navigation.navigate("Annonce", { id });
-    }
+    const deleteAnnonce = (id: string) => {
+        fetch(`http://192.168.1.117:3000/delete/${id}`, {
+            method: "GET",
+        })
+            .then((response) => {
+                if (!response.ok) {
+                    throw new Error('Network response was not ok');
+                }
+                return response.json();
+            })
+            .then(() => {
+                setAnnonces(annonces.filter(annonce => annonce._id !== id));
+            })
+            .catch((error) => setError(error.message));
+    };
 
-    return (
+
+    return (    
         <ScrollView contentContainerStyle={styles.container}>
             {error ? (
                 <Text style={styles.errorText}>Error: {error}</Text>
@@ -44,12 +57,26 @@ const Annonces = () => {
                             <Text style={styles.titre}>{annonce.titre}</Text>
                         </View>
                         <Text style={styles.description}>{annonce.description}</Text>
-                        <Text style={styles.prix}>{annonce.prix}</Text>
-                        <Text style={styles.categorie}>{annonce.categorie}</Text>
-                        <Text style={styles.location}>{annonce.location}</Text>
-                        <Text style={styles.vendeur}>{annonce.vendeur}</Text>
-                        <TouchableOpacity onPress={() => handleAnnonceLink(annonce._id)} style={styles.voir}> 
+                        <Text style={styles.prix}>{annonce.prix} €</Text>
+                        <Text style={styles.localisation}>{annonce.localisation}</Text>
+                        <TouchableOpacity style={styles.voir}>
+                            <Link 
+                                href={{
+                                    pathname: '/view/[id]',
+                                    params: { id: annonce._id },
+                                }}>
                             <Text>Voir</Text>
+                        </Link>
+                        </TouchableOpacity>
+                        
+                        <TouchableOpacity style={styles.modifier}> 
+                            <Text>Modifier</Text>
+                        </TouchableOpacity>
+                        <TouchableOpacity 
+                            style={styles.supprimer}
+                            onPress={() => deleteAnnonce(annonce._id)}
+                        > 
+                            <Text>Supprimer</Text>
                         </TouchableOpacity>
                     </View>
                 ))
@@ -61,7 +88,7 @@ const Annonces = () => {
 const styles = StyleSheet.create({
     container: {
         padding: 16,
-        backgroundColor: '#88c6d1',
+        backgroundColor: '#9C27B0',
     },
     card: {
         backgroundColor: '#fff',
@@ -78,7 +105,7 @@ const styles = StyleSheet.create({
         elevation: 5,
     },
     titleContainer: {
-        backgroundColor: '#88c6d1',
+        backgroundColor: '#E91E63',
         padding: 8,
         borderRadius: 4,
         marginBottom: 8,
@@ -112,24 +139,48 @@ const styles = StyleSheet.create({
         fontWeight: 'bold',
         marginBottom: 4,
         color: '#333',
+        textAlign: 'center',
     },
     categorie: {
         fontSize: 14,
         color: '#666',
         marginBottom: 4,
     },
-    location: {
+    localisation: {
         fontSize: 14,
         color: '#666',
         marginBottom: 4,
+        textAlign: 'center',
     },
     vendeur: {
         fontSize: 14,
         color: '#666',
     },
     voir: {
-        
-    }
+        backgroundColor: '#FFC107', 
+        padding: 10, 
+        borderRadius: 5, 
+        alignItems: 'center',
+        justifyContent: 'center', 
+        shadowColor: '#000', 
+    },
+    modifier: {
+        backgroundColor: '#FF9800', 
+        padding: 10, 
+        borderRadius: 5, 
+        alignItems: 'center',
+        justifyContent: 'center', 
+        shadowColor: '#000', 
+    },
+    supprimer: {
+        backgroundColor: '#F44336', 
+        padding: 10, 
+        borderRadius: 5, 
+        alignItems: 'center',
+        justifyContent: 'center', 
+        shadowColor: '#000', 
+    },
+    
 });
 
 export default Annonces;

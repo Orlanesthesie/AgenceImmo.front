@@ -5,19 +5,19 @@ import { ThemedText } from '@/components/ThemedText';
 import { ThemedView } from '@/components/ThemedView';
 import Annonces from '@/components/navigation/Annonces';
 
-export default function HomeScreen() {
+export default function HomeScreen(props:any) {
+  console.log(props)
   return (
     <ParallaxScrollView
-      headerBackgroundColor={{ light: '#A1CEDC', dark: '#1D3D47' }}
+      headerBackgroundColor={{ light: '#E91E63', dark: '#E91E63' }}
       headerImage={
         <Image
-          source={require('@/assets/images/immeuble.jpg')}
+          source={require('@/assets/images/lavande.jpg')}
           style={styles.reactLogo}
         />
       }>
       <ThemedView style={styles.titleContainer}>
-        <ThemedText type="title" style={styles.titleText}>Imobili</ThemedText>
-        <HelloWave/>
+        <ThemedText type="title" style={styles.titleText}>✿ Imobili ✿</ThemedText>
       </ThemedView>
       <ThemedView>
         <Annonces />
@@ -29,9 +29,10 @@ export default function HomeScreen() {
 const styles = StyleSheet.create({
   titleContainer: {
     flexDirection: 'row',
+    justifyContent: 'center', 
     alignItems: 'center',
     gap: 8,
-    backgroundColor: '#354D52',
+    backgroundColor: '#E91E63',
     padding: 12,
     borderRadius: 8,
     marginBottom: 16,

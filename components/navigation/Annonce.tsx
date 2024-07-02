@@ -1,4 +1,6 @@
 import { useNavigation } from "@react-navigation/native";
+import { Route } from "expo-router/build/Route";
+import { HStack, Heading, Spinner } from "native-base";
 import React, { useEffect, useState } from "react";
 import { View, Text, StyleSheet, ScrollView } from "react-native";
 
@@ -7,47 +9,52 @@ interface Annonce {
     titre: string;
     description: string;
     prix: string;
-    location: string;
+    localisation: string;
     categorie: string;
     vendeur: string;
 }
 
-const Annonces = () => {
-    const [annonces, setAnnonces] = useState<Annonce[]>([]);
+const Annonce = (props:any) => {
+    const [annonce, setAnnonce] = useState<Annonce|null>(null);
     const [error, setError] = useState<string | null>(null);
     const navigation = useNavigation();
+    console.log(props.id);
 
     useEffect(() => {
-        fetch("http://192.168.1.117:3000/annonce/:id")
+        fetch(`http://192.168.1.117:3000/annonce/${props.id}`,{
+            method: "GET",
+        })
             .then((response) => {
                 if (!response.ok) {
                     throw new Error('Network response was not ok');
                 }
                 return response.json();
             })
-            .then((data) => setAnnonces(data))
+            .then((data) => setAnnonce(data))
             .catch((error) => setError(error.message));
     }, []);
-
+    if (!annonce) {
+        return (
+         <HStack space={2} justifyContent="center">
+            <Spinner accessibilityLabel="Loading posts" />
+                <Heading color="primary.500" fontSize="md">
+                    Loading
+                </Heading>
+        </HStack>
+        )
+    }
     return (
         <ScrollView contentContainerStyle={styles.container}>
-            {error ? (
-                <Text style={styles.errorText}>Error: {error}</Text>
-            ) : (
-                annonces.map((annonce) => (
                     <View key={annonce._id} style={styles.card}>
                         <View style={styles.titleContainer}>
                             <Text style={styles.titre}>{annonce.titre}</Text>
                         </View>
-                        <Text style={styles.description}>{annonce.description}</Text>
-                        <Text style={styles.prix}>{annonce.prix}</Text>
-                        <Text style={styles.categorie}>{annonce.categorie}</Text>
-                        <Text style={styles.location}>{annonce.location}</Text>
-                        <Text style={styles.vendeur}>{annonce.vendeur}</Text>
-                        
+                        <Text style={styles.description}> Description: {annonce.description}</Text>
+                        <Text style={styles.prix}>Prix: {annonce.prix}</Text>
+                        <Text style={styles.categorie}>Categorie: {annonce.categorie}</Text>
+                        <Text style={styles.localisation}>Localisation: {annonce.localisation}</Text>
+                        <Text style={styles.vendeur}>Vendeur: {annonce.vendeur}</Text>                       
                     </View>
-                ))
-            )}
         </ScrollView>
     );
 };
@@ -72,7 +79,7 @@ const styles = StyleSheet.create({
         elevation: 5,
     },
     titleContainer: {
-        backgroundColor: '#88c6d1',
+        backgroundColor: '#E91E63',
         padding: 8,
         borderRadius: 4,
         marginBottom: 8,
@@ -112,7 +119,7 @@ const styles = StyleSheet.create({
         color: '#666',
         marginBottom: 4,
     },
-    location: {
+    localisation: {
         fontSize: 14,
         color: '#666',
         marginBottom: 4,
@@ -123,4 +130,4 @@ const styles = StyleSheet.create({
     },
 });
 
-export default Annonces;
+export default Annonce;
